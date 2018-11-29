@@ -8,16 +8,42 @@
     tools:context=".MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <EditText
-        android:id="@+id/etSearch"
-        android:layout_width="match_parent"
+    <ProgressBar
+        android:id="@+id/progress"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:hint="Buscar" />
+        android:layout_marginBottom="8dp"
+        android:visibility="gone" />
 
-    <ListView
-        android:id="@+id/lvMutantes"
-        android:layout_below="@id/etSearch"
+    <RelativeLayout
+        android:id="@+id/layoutMain"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"></ListView>
+        android:layout_height="match_parent">
+
+
+        <EditText
+            android:id="@+id/etSearch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Buscar"/>
+
+        <ListView
+            android:id="@+id/lvMutantes"
+            android:layout_below="@id/etSearch"
+            android:layout_above="@id/btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></ListView>
+
+        <Button
+            android:id="@+id/btn"
+            android:layout_width="match_parent"
+            android:layout_height="100px"
+            android:text="Filtrar"
+            android:drawableLeft="@drawable/ic_search_black_24dp"
+            android:layout_alignParentBottom="true"/>
+    </RelativeLayout>
+
+
 
 </RelativeLayout>

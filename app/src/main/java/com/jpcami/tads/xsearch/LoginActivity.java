@@ -3,6 +3,7 @@ package com.jpcami.tads.xsearch;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
@@ -29,7 +30,10 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.jpcami.tads.xsearch.service.ApplicationService;
+import com.jpcami.tads.xsearch.util.DefaultTask;
 import com.jpcami.tads.xsearch.util.RestHandler;
 
 import org.json.JSONException;
@@ -62,7 +66,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
-    private UserLoginTask mAuthTask = null;
+    private LoginTask mAuthTask = null;
 
     // UI references.
     private AutoCompleteTextView mEmailView;
@@ -193,7 +197,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
             // Show a progress spinner, and kick off a background task to
             // perform the user login attempt.
             showProgress(true);
-            mAuthTask = new UserLoginTask(email, password);
+            mAuthTask = new LoginTask(this, email, password);
             mAuthTask.execute((Void) null);
         }
     }
@@ -298,44 +302,24 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         int IS_PRIMARY = 1;
     }
 
-    /**
-     * Represents an asynchronous login/registration task used to authenticate
-     * the user.
-     */
-    public class UserLoginTask extends AsyncTask<Void, Void, Boolean> {
+    public class LoginTask extends DefaultTask<Void, Void, Boolean> {
 
-        private final String mEmail;
-        private final String mPassword;
+        private String login;
+        private String password;
 
-        UserLoginTask(String email, String password) {
-            mEmail = email;
-            mPassword = password;
+        public LoginTask(Context context, String login, String password) {
+            super(context);
+            this.login = login;
+            this.password = password;
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
-            JSONObject body = new JSONObject();
-            try {
-                body.put("login", mEmail);
-                body.put("password", mPassword);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
-            try {
-                JSONObject result = new RestHandler().call(new URL("http://localhost:8080/users"), "POST", body);
-                System.out.println(result);
-
-                return result.getBoolean("authenticated");
-
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            } catch (JSONException e) {
-                throw new RuntimeException(e);
-            }
+        protected Boolean executeTask(Void... voids) throws IOException {
+            return new ApplicationService().autenticate(login, password);
         }
 
         @Override
-        protected void onPostExecute(final Boolean success) {
+        protected void onFinish(Boolean success) {
             mAuthTask = null;
             showProgress(false);
 
